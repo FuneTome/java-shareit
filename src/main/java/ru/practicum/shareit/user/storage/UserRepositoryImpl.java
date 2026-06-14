@@ -1,19 +1,18 @@
 package ru.practicum.shareit.user.storage;
 
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
     private final List<User> users = new ArrayList<>();
-    Long id = 1L;
+    private Long id = 1L;
 
-    public User getUserById (long id) {
+    public User getUserById(long id) {
         return users.stream()
                 .filter(user -> user.getId() == id)
                 .findFirst()
@@ -26,25 +25,32 @@ public class UserRepositoryImpl implements UserRepository {
         return user;
     }
 
-    public User updateUser(User user) {
-        int index = IntStream.range(0, users.size())
-                .filter(i -> users.get(i).getId().equals(user.getId()))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException(""));
-        users.set(index, user);
-        return user;
+    public User updateUser(User updateUser, long id) {
+        User oldUser = getUserById(id);
+        if (updateUser.getName() != null) {
+            oldUser.setName(updateUser.getName());
+        }
+        if (updateUser.getEmail() != null) {
+            if (!updateUser.getEmail().equals(oldUser.getEmail())) {
+                if (existByEmail(updateUser.getEmail())) {
+                    throw new ConflictException("Почта = " + updateUser.getEmail() + " уже используется");
+                }
+                oldUser.setEmail(updateUser.getEmail());
+            }
+        }
+        return oldUser;
     }
 
-    public void deleteUser (long id) {
+    public void deleteUser(long id) {
         User deleted = getUserById(id);
         users.remove(deleted);
     }
 
-    public boolean existById (long id) {
-        return users.stream().anyMatch(user -> user.getId().equals(id));
+    public boolean existById(long id) {
+        return users.stream().anyMatch(user -> user.getId() == id);
     }
 
-    public boolean existByEmail (String email) {
+    public boolean existByEmail(String email) {
         return users.stream().anyMatch(user -> user.getEmail().equals(email));
     }
 }

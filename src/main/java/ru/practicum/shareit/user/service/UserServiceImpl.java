@@ -30,19 +30,8 @@ public class UserServiceImpl implements UserService {
 
     public UserDto updateUser(UserUpdateDto userUpdate, long id) {
         checkUserExists(id);
-        User oldUser = userRepository.getUserById(id);
-
-        if (userUpdate.getName() != null) {
-            oldUser.setName(userUpdate.getName());
-        }
-        if (userUpdate.getEmail() != null) {
-            if (!userUpdate.getEmail().equals(oldUser.getEmail())) {
-                checkEmailExists(userUpdate.getEmail());
-            }
-            oldUser.setEmail(userUpdate.getEmail());
-        }
-        userRepository.updateUser(oldUser);
-        return UserMapper.toDto(oldUser);
+        User updateUser = UserMapper.toUser(userUpdate);
+        return UserMapper.toDto(userRepository.updateUser(updateUser, id));
     }
 
     public void deleteUser(long id) {

@@ -1,10 +1,8 @@
 package ru.practicum.shareit.item.model;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import ru.practicum.shareit.item.availabilityStatus;
-import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.model.User;
 
 /**
  * TODO Sprint add-controllers.
@@ -16,8 +14,7 @@ public class Item {
     private String name;
     @NotBlank
     private String description;
-    private availabilityStatus availably;
-    @NotBlank
-    private User owner;
-    private ItemRequest request;
+    @NotNull
+    private Boolean available;
+    private long owner;
 }

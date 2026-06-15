@@ -62,10 +62,4 @@ public class ItemRepositoryImpl implements ItemRepository {
     public boolean checkItemExist(long itemId) {
         return items.stream().anyMatch(item -> item.getId() == itemId);
     }
-
-    public boolean checkIsOwner(long userId, long itemId) {
-        return items.stream()
-                .filter(item -> item.getId() == itemId)
-                .anyMatch(item -> item.getOwner() == userId);
-    }
 }

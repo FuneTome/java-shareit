@@ -62,7 +62,8 @@ public class ItemServiceImpl implements ItemService {
         if (!itemRepository.checkItemExist(itemId)) {
             throw new NotFoundException("Предмет с id = " + itemId + " не найден");
         }
-        if (!itemRepository.checkIsOwner(userId, itemId)) {
+        Item item = itemRepository.getItemById(itemId);
+        if (item.getOwner() != userId) {
             throw new ForbiddenException("Юзер с id = " + userId + " не является владельцем данной вещи");
         }
         Item updateItem = ItemMapper.toItem(itemUpdate);

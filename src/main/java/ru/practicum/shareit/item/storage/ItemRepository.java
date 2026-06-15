@@ -16,6 +16,4 @@ public interface ItemRepository {
     Item updateItem(long itemId, Item itemUpdate);
 
     boolean checkItemExist(long itemId);
-
-    boolean checkIsOwner(long userId, long itemId);
 }

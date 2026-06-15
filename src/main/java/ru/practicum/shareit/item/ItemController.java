@@ -17,9 +17,10 @@ import java.util.Collection;
 @AllArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    private final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @GetMapping
-    public Collection<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") long ownerId) {
+    public Collection<ItemDto> getItems(@RequestHeader(USER_ID_HEADER) long ownerId) {
         return itemService.getAllItems(ownerId);
     }
 
@@ -34,12 +35,12 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long ownerId, @Valid @RequestBody ItemDto item) {
+    public ItemDto addItem(@RequestHeader(USER_ID_HEADER) long ownerId, @Valid @RequestBody ItemDto item) {
         return itemService.addItem(ownerId, item);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId,
+    public ItemDto updateItem(@RequestHeader(USER_ID_HEADER) long userId, @PathVariable long itemId,
                               @RequestBody ItemUpdateDto itemUpdate) {
         return itemService.updateItem(userId, itemId, itemUpdate);
     }

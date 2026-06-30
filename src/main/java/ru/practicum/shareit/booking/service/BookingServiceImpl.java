@@ -34,11 +34,8 @@ public class BookingServiceImpl implements BookingService {
             throw new BadRequestException("Время не может быть одинаковым");
         }
         User user = checkUserExistAndReturn(userId);
-        Item item = itemRepository.findById(booking.getItemId()).orElseThrow(()
-                -> new NotFoundException("Предмета с id = " + booking.getItemId() + " не существует"));
-        if (!item.getAvailable()) {
-            throw new BadRequestException("Вещь недоступна для бронирования");
-        }
+        Item item = checkItemExistAndReturn(booking.getItemId());
+        checkAvailable(item);
         Booking bk = BookingMapper.toBooking(booking, user, item);
         return BookingMapper.toOut(bookingRepository.save(bk));
     }
@@ -102,5 +99,16 @@ public class BookingServiceImpl implements BookingService {
     private Booking checkBookingExistAndReturn(long bookingId) {
         return bookingRepository.findById(bookingId).orElseThrow(()
                 -> new NotFoundException("Бронирование с id = " + bookingId + " не найден"));
+    }
+
+    private Item checkItemExistAndReturn(long itemId) {
+        return itemRepository.findById(itemId).orElseThrow(()
+                -> new NotFoundException("Предмета с id = " + itemId + " не существует"));
+    }
+
+    private void checkAvailable(Item item) {
+        if (!item.getAvailable()) {
+            throw new BadRequestException("Вещь недоступна для бронирования");
+        }
     }
 }

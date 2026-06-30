@@ -23,16 +23,7 @@ public class CommentMapper {
         out.setText(comment.getText());
         out.setCreatingDate(comment.getCreatingDate());
         out.setItem(ItemMapper.toOut(comment.getItem()));
-        out.setAuthor(comment.getAuthor().getName());
-        return out;
-    }
-
-    public static CommentDtoMini toOutMini(Comment comment) {
-        CommentDtoMini out = new CommentDtoMini();
-        out.setId(comment.getId());
-        out.setText(comment.getText());
-        out.setCreatingDate(comment.getCreatingDate());
-        out.setAuthor(comment.getAuthor().getName());
+        out.setAuthorName(comment.getAuthor().getName());
         return out;
     }
 }

@@ -12,7 +12,7 @@ public class ItemDtoOut {
     private String name;
     private String description;
     private Boolean available;
-    private BookingDtoOutMini lastBooking;
-    private Collection<CommentDtoMini> comments;
-    private BookingDtoOutMini nextBooking;
+    private BookingDtoOut lastBooking;
+    private Collection<CommentDtoOut> comments;
+    private BookingDtoOut nextBooking;
 }

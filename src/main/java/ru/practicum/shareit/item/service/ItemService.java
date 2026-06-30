@@ -7,7 +7,7 @@ import java.util.Collection;
 public interface ItemService {
     Collection<ItemDtoOut> getAllItems(long ownerId);
 
-    ItemDtoOut getItemById(long itemId);
+    ItemDtoOut getItemById(long userId, long itemId);
 
     Collection<ItemDtoOut> searchItems(String text);
 

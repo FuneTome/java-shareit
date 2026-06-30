@@ -9,6 +9,6 @@ public class CommentDtoOut {
     private Long id;
     private String text;
     private ItemDtoOut item;
-    private String author;
+    private String authorName;
     private LocalDateTime creatingDate;
 }

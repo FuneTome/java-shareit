@@ -39,19 +39,19 @@ public class ItemServiceImpl implements ItemService {
         Collection<Booking> bookings = bookingRepository.findAllByItem_Owner_Id(ownerId); //все бронирования вещей данного владельца
         Collection<Comment> comments = commentRepository.findAllByItem_Owner_Id(ownerId); //все комментарии к вещам данного владельца
 
-        Map<Long, List<CommentDtoMini>> cms = new HashMap<>();
-        Map<Long, List<BookingDtoOutMini>> bks = new HashMap<>();
+        Map<Long, List<CommentDtoOut>> cms = new HashMap<>();
+        Map<Long, List<BookingDtoOut>> bks = new HashMap<>();
 
         for (Item i : items) {
             Long id = i.getId();
             cms.put(id, comments.stream()
                             .filter(c -> Objects.equals(c.getItem().getId(), id))
-                            .map(CommentMapper::toOutMini)
+                            .map(CommentMapper::toOut)
                             .toList());
 
             bks.put(id, bookings.stream()
                             .filter(b -> Objects.equals(b.getItem().getId(), id))
-                            .map(BookingMapper::toOutMini)
+                            .map(BookingMapper::toOut)
                             .toList());
         }
 
@@ -64,21 +64,27 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDtoOut getItemById(long itemId) {
+    public ItemDtoOut getItemById(long userId, long itemId) {
         Item item = checkItemExistAndReturn(itemId);
 
-        Collection<BookingDtoOutMini> bookings = bookingRepository.findAllByItem_Id(itemId).stream()
-                .map(BookingMapper::toOutMini)
-                .toList();
+        List<Comment> comments = commentRepository.findByItemId(itemId);
+        List<CommentDtoOut> commentDto = comments.stream()
+                .map(CommentMapper::toOut)
+                .collect(Collectors.toList());
 
-        Collection<CommentDtoMini> comments = commentRepository.findAllByItem_Id(itemId).stream()
-                .map(CommentMapper::toOutMini)
-                .toList();
+        BookingDtoOut lastBooking = null;
+        BookingDtoOut nextBooking = null;
 
-        return ItemMapper.toOut(item,
-                getLastBooking(bookings, LocalDateTime.now()),
-                getNextBooking(bookings, LocalDateTime.now()),
-                comments);
+        if (item.getOwner().getId() == userId) {
+            List<Booking> bookings = bookingRepository.findByItemId(itemId);
+            List<BookingDtoOut> bookingDto = bookings.stream()
+                    .map(BookingMapper::toOut)
+                    .collect(Collectors.toList());
+            lastBooking = getLastBooking(bookingDto, LocalDateTime.now());
+            nextBooking = getNextBooking(bookingDto, LocalDateTime.now());
+        }
+
+        return ItemMapper.toOut(item, lastBooking, nextBooking, commentDto);
     }
 
     @Override
@@ -123,15 +129,21 @@ public class ItemServiceImpl implements ItemService {
     public CommentDtoOut createComment(long authorId, long itemId, CommentDto comment) {
         User user = checkUserExistAndReturn(authorId);
         Item item = checkItemExistAndReturn(itemId);
-        Booking bk = bookingRepository.findByBooker_IdAndEndDateIsBeforeAndItem_id(authorId, LocalDateTime.now(), itemId);
-        if(bk == null) {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        Optional<Booking> approvedPastBooking = bookingRepository
+                .findByBookerIdAndItemIdAndStatusAndEndDateBefore(authorId, itemId, BookingStatus.APPROVED, now);
+        if (approvedPastBooking.isPresent()) {
+            Comment cm = CommentMapper.toComment(comment, user, item);
+            return CommentMapper.toOut(commentRepository.save(cm));
+        }
+        boolean hasAnyBooking = bookingRepository.existsByBookerIdAndItemId(authorId, itemId);
+        if (!hasAnyBooking) {
             throw new NotFoundException("Юзер с id = " + authorId + " не бронировал данную вещь");
+        } else {
+            throw new BadRequestException("Невозможно оставить комментарий: бронирование не одобрено или ещё не завершено");
         }
-        if (bk.getStatus().equals(BookingStatus.CANCELED)) {
-            throw new BadRequestException("Невозможно оставить комментарий к неодобренному бронированию");
-        }
-        Comment cm = CommentMapper.toComment(comment, user, item);
-        return CommentMapper.toOut(commentRepository.save(cm));
     }
 
     private User checkUserExistAndReturn(long userId) {
@@ -144,7 +156,7 @@ public class ItemServiceImpl implements ItemService {
                 -> new NotFoundException("Предмет с id = " + itemId + " не найден"));
     }
 
-    private BookingDtoOutMini getLastBooking(Collection<BookingDtoOutMini> bookings, LocalDateTime time) {
+    private BookingDtoOut getLastBooking(Collection<BookingDtoOut> bookings, LocalDateTime time) {
         if (bookings == null || bookings.isEmpty()) {
             return null;
         }
@@ -155,7 +167,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElse(null);
     }
 
-    private BookingDtoOutMini getNextBooking(Collection<BookingDtoOutMini> bookings, LocalDateTime time) {
+    private BookingDtoOut getNextBooking(Collection<BookingDtoOut> bookings, LocalDateTime time) {
         if (bookings == null || bookings.isEmpty()) {
             return null;
         }

@@ -13,7 +13,7 @@ public interface BookingService {
 
     BookingDtoOut getBooking(long bookingId);
 
-    Collection<BookingDtoOut> getUserBookings (long userId, BookingState approved);
+    Collection<BookingDtoOut> getUserBookings(long userId, BookingState approved);
 
     Collection<BookingDtoOut> getOwnerBookings(long userId, BookingState state);
 }

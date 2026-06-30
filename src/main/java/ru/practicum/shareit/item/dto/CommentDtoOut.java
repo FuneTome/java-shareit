@@ -10,5 +10,5 @@ public class CommentDtoOut {
     private String text;
     private ItemDtoOut item;
     private String authorName;
-    private LocalDateTime creatingDate;
+    private LocalDateTime created;
 }

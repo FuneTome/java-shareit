@@ -3,10 +3,8 @@ package ru.practicum.shareit.item.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
-import ru.practicum.shareit.booking.dto.BookingDtoOutMini;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -129,20 +127,21 @@ public class ItemServiceImpl implements ItemService {
     public CommentDtoOut createComment(long authorId, long itemId, CommentDto comment) {
         User user = checkUserExistAndReturn(authorId);
         Item item = checkItemExistAndReturn(itemId);
-
         LocalDateTime now = LocalDateTime.now();
 
-        Optional<Booking> approvedPastBooking = bookingRepository
-                .findByBookerIdAndItemIdAndStatusAndEndDateBefore(authorId, itemId, BookingStatus.APPROVED, now);
-        if (approvedPastBooking.isPresent()) {
+        Optional<Booking> approvedStarted = bookingRepository
+                .findApprovedAndStarted(authorId, itemId, now);
+
+        if (approvedStarted.isPresent()) {
             Comment cm = CommentMapper.toComment(comment, user, item);
             return CommentMapper.toOut(commentRepository.save(cm));
         }
-        boolean hasAnyBooking = bookingRepository.existsByBookerIdAndItemId(authorId, itemId);
-        if (!hasAnyBooking) {
+
+        boolean hasAny = bookingRepository.existsByBookerIdAndItemId(authorId, itemId);
+        if (!hasAny) {
             throw new NotFoundException("Юзер с id = " + authorId + " не бронировал данную вещь");
         } else {
-            throw new BadRequestException("Невозможно оставить комментарий: бронирование не одобрено или ещё не завершено");
+            throw new BadRequestException("Невозможно оставить комментарий: бронирование не одобрено или ещё не началось");
         }
     }
 

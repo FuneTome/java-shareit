@@ -25,7 +25,7 @@ public class Item {
     @NotBlank
     @Column(nullable = false)
     private String description;
-    
+
     @NotNull
     @Column(nullable = false)
     private Boolean available;

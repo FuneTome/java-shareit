@@ -1,10 +1,8 @@
 package ru.practicum.shareit.booking.storage;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 
 import java.time.LocalDateTime;
@@ -48,10 +46,13 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "and b.status = ?2")
     Collection<Booking> findByOwnerIdAndStatus(long ownerId, BookingStatus status);
 
-    Optional<Booking> findByBookerIdAndItemIdAndStatusAndEndDateBefore(
-            Long bookerId, Long itemId, BookingStatus status, LocalDateTime endDate);
-
     boolean existsByBookerIdAndItemId(Long bookerId, Long itemId);
+
+    @Query("SELECT b FROM Booking b " +
+            "WHERE b.booker.id = ?1 " +
+            "AND b.item.id = ?2 " +
+            "AND b.startDate < ?3")
+    Optional<Booking> findApprovedAndStarted(Long bookerId, Long itemId, LocalDateTime now);
 
     Collection<Booking> findAllByItem_Owner_Id(long ownerId);
 

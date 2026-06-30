@@ -68,7 +68,7 @@ public class BookingServiceImpl implements BookingService {
     public Collection<BookingDtoOut> getUserBookings(long userId, BookingState state) {
         checkUserExistAndReturn(userId);
         Collection<Booking> booking = new ArrayList<>();
-        switch(state) {
+        switch (state) {
             case ALL -> booking = bookingRepository.findByBooker_Id(userId);
             case CURRENT -> booking = bookingRepository.findByBetween(userId, LocalDateTime.now());
             case PAST -> booking = bookingRepository.findByBooker_IdAndEndDateIsBefore(userId, LocalDateTime.now());
@@ -83,7 +83,7 @@ public class BookingServiceImpl implements BookingService {
     public Collection<BookingDtoOut> getOwnerBookings(long ownerId, BookingState state) {
         checkUserExistAndReturn(ownerId);
         Collection<Booking> booking = new ArrayList<>();
-        switch(state) {
+        switch (state) {
             case ALL -> booking = bookingRepository.findByOwnerIdAll(ownerId);
             case CURRENT -> booking = bookingRepository.findByOwnerIdCurrent(ownerId, LocalDateTime.now());
             case PAST -> booking = bookingRepository.findByOwnerIdPast(ownerId, LocalDateTime.now());

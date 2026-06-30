@@ -2,11 +2,10 @@ package ru.practicum.shareit.item.dto;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
-import ru.practicum.shareit.booking.dto.BookingDtoOutMini;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 @Component
 public class ItemMapper {
@@ -33,7 +32,7 @@ public class ItemMapper {
                                    BookingDtoOut nextBooking,
                                    Collection<CommentDtoOut> comments) {
         ItemDtoOut out = toOut(item);
-        out.setComments(comments != null ? new ArrayList<>(comments) : new ArrayList<>());
+        out.setComments(comments != null ? comments : Collections.emptyList());
         out.setLastBooking(lastBooking);
         out.setNextBooking(nextBooking);
         return out;

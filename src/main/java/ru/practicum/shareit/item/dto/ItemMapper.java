@@ -1,7 +1,11 @@
 package ru.practicum.shareit.item.dto;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.item.model.Item;
+
+import java.util.Collection;
+import java.util.Collections;
 
 @Component
 public class ItemMapper {
@@ -15,21 +19,22 @@ public class ItemMapper {
         return item;
     }
 
-    public static ItemDto toDto(Item item) {
-        ItemDto dto = new ItemDto();
-        dto.setId(item.getId());
-        dto.setName(item.getName());
-        dto.setDescription(item.getDescription());
-        dto.setAvailable(item.getAvailable());
-        dto.setOwner(item.getOwner());
-        return dto;
+    public static ItemDtoOut toOut(Item item) {
+        ItemDtoOut out = new ItemDtoOut();
+        out.setId(item.getId());
+        out.setName(item.getName());
+        out.setDescription(item.getDescription());
+        out.setAvailable(item.getAvailable());
+        return out;
     }
 
-    public static Item toItem(ItemUpdateDto dto) {
-        Item item = new Item();
-        item.setName(dto.getName());
-        item.setDescription(dto.getDescription());
-        item.setAvailable(dto.getAvailable());
-        return item;
+    public static ItemDtoOut toOut(Item item, BookingDtoOut lastBooking,
+                                   BookingDtoOut nextBooking,
+                                   Collection<CommentDtoOut> comments) {
+        ItemDtoOut out = toOut(item);
+        out.setComments(comments != null ? comments : Collections.emptyList());
+        out.setLastBooking(lastBooking);
+        out.setNextBooking(nextBooking);
+        return out;
     }
 }

@@ -6,35 +6,31 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import ru.practicum.shareit.user.model.User;
 
-/**
- * TODO Sprint add-controllers.
- */
+import java.time.LocalDateTime;
+
 @Data
 @Entity
-@Table(name = "items")
-public class Item {
+@Table(name = "comments")
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "item_id")
+    @Column(name = "comment_id")
     private Long id;
 
     @NotBlank
     @Column(nullable = false)
-    private String name;
-
-    @NotBlank
-    @Column(nullable = false)
-    private String description;
-
-    @NotNull
-    @Column(nullable = false)
-    private Boolean available;
+    private String text;
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
+    @JoinColumn(name = "item_id", nullable = false)
+    private Item item;
 
-    @Column(name = "request_id")
-    private Long requestId;
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
+
+    @Column(name = "creating_date", nullable = false)
+    private LocalDateTime creatingDate;
 }

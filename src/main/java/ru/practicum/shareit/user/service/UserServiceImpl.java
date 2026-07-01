@@ -17,36 +17,46 @@ public class UserServiceImpl implements UserService {
 
     public UserDto getUser(long id) {
         checkUserExists(id);
-        User user = userRepository.getUserById(id);
+        User user = userRepository.findById(id).orElseThrow();
         return UserMapper.toDto(user);
     }
 
     public UserDto addUser(UserDto userDto) {
         checkEmailExists(userDto.getEmail());
         User user = UserMapper.toUser(userDto);
-        User saved = userRepository.addUser(user);
+        User saved = userRepository.save(user);
         return UserMapper.toDto(saved);
     }
 
     public UserDto updateUser(UserUpdateDto userUpdate, long id) {
-        checkUserExists(id);
-        User updateUser = UserMapper.toUser(userUpdate);
-        return UserMapper.toDto(userRepository.updateUser(updateUser, id));
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Юзер с id = " + id + " не найден"));
+
+        if (userUpdate.getName() != null && !userUpdate.getName().isBlank()) {
+            existingUser.setName(userUpdate.getName());
+        }
+        if (userUpdate.getEmail() != null && !userUpdate.getEmail().isBlank()) {
+            if (!userUpdate.getEmail().equals(existingUser.getEmail())) {
+                checkEmailExists(userUpdate.getEmail());
+            }
+            existingUser.setEmail(userUpdate.getEmail());
+        }
+        return UserMapper.toDto(userRepository.save(existingUser));
     }
 
     public void deleteUser(long id) {
         checkUserExists(id);
-        userRepository.deleteUser(id);
+        userRepository.deleteById(id);
     }
 
     private void checkUserExists(long userId) {
-        if (!userRepository.existById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Юзер с id = " + userId + " не найден");
         }
     }
 
     private void checkEmailExists(String email) {
-        if (userRepository.existByEmail(email)) {
+        if (userRepository.existsByEmail(email)) {
             throw new ConflictException("Почта = " + email + " уже используется");
         }
     }

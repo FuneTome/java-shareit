@@ -1,0 +1,45 @@
+CREATE TABLE IF NOT EXISTS users (
+    user_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    email VARCHAR NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS requests (
+    request_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    description VARCHAR NOT NULL,
+    requestor_id INTEGER NOT NULL,
+    created TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    FOREIGN KEY (requestor_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS items (
+    item_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    description VARCHAR NOT NULL,
+    available BOOLEAN NOT NULL,
+    owner_id INTEGER NOT NULL,
+    request_id INTEGER,
+    FOREIGN KEY (owner_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (request_id) REFERENCES requests(request_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS bookings (
+    booking_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    start_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    end_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    item_id INTEGER NOT NULL,
+    booker_id INTEGER NOT NULL,
+    status VARCHAR NOT NULL,
+    FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE,
+    FOREIGN KEY (booker_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+    comment_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    text VARCHAR NOT NULL,
+    item_id INTEGER NOT NULL,
+    author_id INTEGER NOT NULL,
+    creating_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE,
+    FOREIGN KEY (author_id) REFERENCES users(user_id) ON DELETE CASCADE
+);

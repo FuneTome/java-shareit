@@ -42,4 +42,8 @@ public class ItemClient extends BaseClient {
     public ResponseEntity<Object> searchItems(String text) {
         return get(API_PREFIX + "/search?text=" + text, null, null);
     }
+
+    public ResponseEntity<Object> createComment(Long authorId, Long itemId, Object comment) {
+        return post(API_PREFIX + "/" + itemId + "/comment", authorId, comment);
+    }
 }

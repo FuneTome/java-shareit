@@ -29,7 +29,7 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> approvedBooking(long userId, boolean approved, long bookingId) {
-        return patch(API_PREFIX + "/" + bookingId, userId, approved);
+        return patch(API_PREFIX + "/" + bookingId + "?approved=" + approved, userId);
     }
 
     public ResponseEntity<Object> getBooking(long bookingId) {
@@ -37,10 +37,10 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getUserBookings(long userId, BookingState state) {
-        return post(API_PREFIX, userId, state);
+        return get(API_PREFIX + "?state=" + state, userId);
     }
 
     public ResponseEntity<Object> getOwnerBookings(long userId, BookingState state) {
-        return patch(API_PREFIX + "/owner", userId, state);
+        return get(API_PREFIX + "/owner?state=" + state, userId);
     }
 }

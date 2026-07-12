@@ -46,8 +46,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "and b.status = ?2")
     Collection<Booking> findByOwnerIdAndStatus(long ownerId, BookingStatus status);
 
-    boolean existsByBookerIdAndItemId(Long bookerId, Long itemId);
-
+    @Query("SELECT COUNT(b) > 0 FROM Booking b WHERE b.booker.id = ?1 AND b.item.id = ?2")
+    boolean existsByBookerIdAndItemId(long bookerId, long itemId);
+    
     @Query("SELECT b FROM Booking b " +
             "WHERE b.booker.id = ?1 " +
             "AND b.item.id = ?2 " +

@@ -22,7 +22,7 @@ public class ItemRequestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemRequestDtoOut createRequest(@Valid @RequestBody ItemRequestDto request,
+    public ItemRequestDtoOut createRequest(@RequestBody ItemRequestDto request,
                                            @RequestHeader(USER_ID_HEADER) long requestorId) {
         return requestService.createRequest(request, requestorId);
     }

@@ -41,7 +41,7 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDtoOut addItem(@RequestHeader(USER_ID_HEADER) long ownerId, @Valid @RequestBody ItemDto item) {
+    public ItemDtoOut addItem(@RequestHeader(USER_ID_HEADER) long ownerId, @RequestBody ItemDto item) {
         return itemService.addItem(ownerId, item);
     }
 
@@ -54,7 +54,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDtoOut createComment(@RequestHeader(USER_ID_HEADER) long authorId,
                                        @PathVariable long itemId,
-                                       @Valid @RequestBody CommentDto comment) {
+                                       @RequestBody CommentDto comment) {
         return itemService.createComment(authorId, itemId, comment);
     }
 }

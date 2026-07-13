@@ -28,14 +28,4 @@ public class BookingMapper {
         out.setStatus(booking.getStatus());
         return out;
     }
-
-    public static BookingDtoOutMini toOutMini(Booking booking) {
-        BookingDtoOutMini out = new BookingDtoOutMini();
-        out.setId(booking.getId());
-        out.setStartDate(booking.getStartDate());
-        out.setEndDate(booking.getEndDate());
-        out.setBooker(booking.getBooker().getName());
-        out.setStatus(booking.getStatus());
-        return out;
-    }
 }

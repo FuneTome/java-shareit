@@ -2,6 +2,7 @@ package ru.practicum.shareit.request.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoOut;
@@ -36,6 +37,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<ItemRequestDtoOut> getAllRequests() {
         Collection<Request> req = requestRepository.findAll();
         return req.stream()

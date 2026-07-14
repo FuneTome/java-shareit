@@ -9,14 +9,13 @@ import java.util.Collections;
 
 @Component
 public class ItemMapper {
+
     public static Item toItem(ItemDto dto) {
         Item item = new Item();
         item.setId(dto.getId());
         item.setName(dto.getName());
         item.setDescription(dto.getDescription());
         item.setAvailable(dto.getAvailable());
-        item.setOwner(dto.getOwner());
-        item.setRequest(dto.getRequestId());
         return item;
     }
 
@@ -26,7 +25,11 @@ public class ItemMapper {
         out.setName(item.getName());
         out.setDescription(item.getDescription());
         out.setAvailable(item.getAvailable());
-        out.setRequestId(item.getRequest());
+        if (item.getRequest() != null) {
+            out.setRequestId(item.getRequest().getId());
+        } else {
+            out.setRequestId(null);
+        }
         return out;
     }
 

@@ -31,8 +31,8 @@ public class RequestClient extends BaseClient {
         return get(API_PREFIX, requestorId);
     }
 
-    public ResponseEntity<Object> getAllRequests() {
-        return get(API_PREFIX + "/all");
+    public ResponseEntity<Object> getAllRequests(long userId) {
+        return get(API_PREFIX + "/all", userId);
     }
 
     public ResponseEntity<Object> getRequest(Long requestId) {

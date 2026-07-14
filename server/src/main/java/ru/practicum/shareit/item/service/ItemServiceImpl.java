@@ -36,7 +36,7 @@ public class ItemServiceImpl implements ItemService {
     public Collection<ItemDtoOut> getAllItems(long ownerId) {
         checkUserExistAndReturn(ownerId);
 
-        Collection<Item> items = itemRepository.findAllByOwnerId(ownerId); //все вещи конкретного владельца
+        Collection<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId); //все вещи конкретного владельца
         Collection<Booking> bookings = bookingRepository.findAllByItem_Owner_Id(ownerId); //все бронирования вещей данного владельца
         Collection<Comment> comments = commentRepository.findAllByItem_Owner_Id(ownerId); //все комментарии к вещам данного владельца
 
@@ -106,9 +106,9 @@ public class ItemServiceImpl implements ItemService {
         item.setOwner(user);
         Long id = newItem.getRequestId();
         if (id != null) {
-            requestRepository.findById(id).orElseThrow(()
+            Request req = requestRepository.findById(id).orElseThrow(()
                     -> new NotFoundException("Запрос с id = " + id + " не найден"));
-            item.setRequest(id);
+            item.setRequest(req);
         }
         return ItemMapper.toOut(itemRepository.save(item));
     }

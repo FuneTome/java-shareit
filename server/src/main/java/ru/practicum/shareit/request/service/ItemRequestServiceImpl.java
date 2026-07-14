@@ -30,7 +30,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public Collection<ItemRequestDtoOut> getUserRequests(long requestorId) {
         checkUserExistAndReturn(requestorId);
-        Collection<Request> req = requestRepository.findByRequestor_Id(requestorId);
+        Collection<Request> req = requestRepository.findByRequestor_IdOrderByCreatedDesc(requestorId);
         return req.stream()
                 .map(RequestMapper::toOut)
                 .toList();
@@ -38,8 +38,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<ItemRequestDtoOut> getAllRequests() {
-        Collection<Request> req = requestRepository.findAll();
+    public Collection<ItemRequestDtoOut> getAllRequests(long userId) {
+        checkUserExistAndReturn(userId);
+        Collection<Request> req = requestRepository.findAllWithoutUserId(userId);
         return req.stream()
                 .map(RequestMapper::toOut)
                 .toList();

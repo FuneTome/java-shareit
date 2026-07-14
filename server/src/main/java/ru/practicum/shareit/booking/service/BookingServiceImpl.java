@@ -66,12 +66,12 @@ public class BookingServiceImpl implements BookingService {
         checkUserExistAndReturn(userId);
         Collection<Booking> booking = new ArrayList<>();
         switch (state) {
-            case ALL -> booking = bookingRepository.findByBooker_Id(userId);
+            case ALL -> booking = bookingRepository.findByBooker_IdOrderByStartDateDesc(userId);
             case CURRENT -> booking = bookingRepository.findByBetween(userId, LocalDateTime.now());
-            case PAST -> booking = bookingRepository.findByBooker_IdAndEndDateIsBefore(userId, LocalDateTime.now());
-            case FUTURE -> booking = bookingRepository.findByBooker_IdAndStartDateIsAfter(userId, LocalDateTime.now());
-            case WAITING -> booking = bookingRepository.findByBooker_IdAndStatus(userId, BookingStatus.WAITING);
-            case REJECTED -> booking = bookingRepository.findByBooker_IdAndStatus(userId, BookingStatus.REJECTED);
+            case PAST -> booking = bookingRepository.findByBooker_IdAndEndDateIsBeforeOrderByStartDateDesc(userId, LocalDateTime.now());
+            case FUTURE -> booking = bookingRepository.findByBooker_IdAndStartDateIsAfterOrderByStartDateDesc(userId, LocalDateTime.now());
+            case WAITING -> booking = bookingRepository.findByBooker_IdAndStatusOrderByStartDateDesc(userId, BookingStatus.WAITING);
+            case REJECTED -> booking = bookingRepository.findByBooker_IdAndStatusOrderByStartDateDesc(userId, BookingStatus.REJECTED);
         }
         return booking.stream().map(BookingMapper::toOut).toList();
     }

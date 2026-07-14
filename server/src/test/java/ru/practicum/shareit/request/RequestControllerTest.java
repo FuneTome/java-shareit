@@ -55,7 +55,7 @@ class RequestControllerTest {
         itemRequestDtoOut.setId(1L);
         itemRequestDtoOut.setDescription("Need a drill");
         itemRequestDtoOut.setCreated(now);
-        itemRequestDtoOut.setRequestor(userDto); // установка объекта UserDto, а не long
+        itemRequestDtoOut.setRequestor(userDto);
     }
 
     @Test
@@ -70,7 +70,7 @@ class RequestControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.description").value("Need a drill"))
-                .andExpect(jsonPath("$.requestor.id").value(1L)); // проверяем вложенный объект
+                .andExpect(jsonPath("$.requestor.id").value(1L));
     }
 
     @Test
@@ -90,14 +90,25 @@ class RequestControllerTest {
     @Test
     void getAllRequests_shouldReturnAllRequests() throws Exception {
         Collection<ItemRequestDtoOut> requests = List.of(itemRequestDtoOut);
-        when(requestService.getAllRequests()).thenReturn(requests);
+        when(requestService.getAllRequests(anyLong())).thenReturn(requests);
 
-        mockMvc.perform(get("/requests/all"))
+        mockMvc.perform(get("/requests/all")
+                        .header(USER_ID_HEADER, 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].description").value("Need a drill"))
                 .andExpect(jsonPath("$[0].requestor.id").value(1L));
+    }
+
+    @Test
+    void getAllRequests_shouldReturnEmptyCollectionWhenNoRequests() throws Exception {
+        when(requestService.getAllRequests(anyLong())).thenReturn(List.of());
+
+        mockMvc.perform(get("/requests/all")
+                        .header(USER_ID_HEADER, 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
     }
 
     @Test
@@ -117,15 +128,6 @@ class RequestControllerTest {
 
         mockMvc.perform(get("/requests")
                         .header(USER_ID_HEADER, 1L))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(0));
-    }
-
-    @Test
-    void getAllRequests_shouldReturnEmptyCollectionWhenNoRequests() throws Exception {
-        when(requestService.getAllRequests()).thenReturn(List.of());
-
-        mockMvc.perform(get("/requests/all"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
     }

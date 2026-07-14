@@ -7,11 +7,11 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.Collection;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    Collection<Item> findAllByOwnerId(long ownerId);
+    Collection<Item> findAllByOwnerIdOrderByIdAsc(long ownerId);
 
     @Query("select i from Item i " +
             "where (upper(i.name) like upper(concat('%', ?1, '%')) " +
             "or upper(i.description) like upper(concat('%', ?1, '%'))) " +
-            "and i.available = true")
+            "and i.available = true order by i.id asc")
     Collection<Item> search(String text);
 }

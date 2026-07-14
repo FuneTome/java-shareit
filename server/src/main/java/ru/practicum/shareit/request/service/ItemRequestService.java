@@ -10,7 +10,7 @@ public interface ItemRequestService {
 
     Collection<ItemRequestDtoOut> getUserRequests(long requestorId);
 
-    Collection<ItemRequestDtoOut> getAllRequests();
+    Collection<ItemRequestDtoOut> getAllRequests(long userId);
 
     ItemRequestDtoOut getRequest(long requestId);
 }

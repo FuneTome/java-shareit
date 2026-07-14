@@ -27,8 +27,8 @@ public class RequestController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getAllRequests() {
-        return requestClient.getAllRequests();
+    public ResponseEntity<Object> getAllRequests(@RequestHeader(USER_ID_HEADER) long userId) {
+        return requestClient.getAllRequests(userId);
     }
 
     @GetMapping("{requestId}")

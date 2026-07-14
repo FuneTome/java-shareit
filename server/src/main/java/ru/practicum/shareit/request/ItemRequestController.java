@@ -1,6 +1,5 @@
 package ru.practicum.shareit.request;
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +32,8 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public Collection<ItemRequestDtoOut> getAllRequests() {
-        return requestService.getAllRequests();
+    public Collection<ItemRequestDtoOut> getAllRequests(@RequestHeader(USER_ID_HEADER) long userId) {
+        return requestService.getAllRequests(userId);
     }
 
     @GetMapping("{requestId}")

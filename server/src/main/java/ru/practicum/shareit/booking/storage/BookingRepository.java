@@ -11,39 +11,39 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    Collection<Booking> findByBooker_Id(long bookerId);
+    Collection<Booking> findByBooker_IdOrderByStartDateDesc(long bookerId);
 
-    Collection<Booking> findByBooker_IdAndEndDateIsBefore(long bookerId, LocalDateTime end);
+    Collection<Booking> findByBooker_IdAndEndDateIsBeforeOrderByStartDateDesc(long bookerId, LocalDateTime end);
 
-    Collection<Booking> findByBooker_IdAndStartDateIsAfter(long bookerId, LocalDateTime start);
+    Collection<Booking> findByBooker_IdAndStartDateIsAfterOrderByStartDateDesc(long bookerId, LocalDateTime start);
 
-    Collection<Booking> findByBooker_IdAndStatus(long bookerId, BookingStatus status);
+    Collection<Booking> findByBooker_IdAndStatusOrderByStartDateDesc(long bookerId, BookingStatus status);
 
-    @Query("select b from Booking b where b.booker.id = ?1 and ?2 between b.startDate and b.endDate")
+    @Query("select b from Booking b where b.booker.id = ?1 and ?2 between b.startDate and b.endDate order by b.startDate desc")
     Collection<Booking> findByBetween(long bookerId, LocalDateTime time);
 
     @Query("select b from Booking b where b.item.id in " +
-            "(select i.id from Item i where i.owner.id = ?1)")
+            "(select i.id from Item i where i.owner.id = ?1) order by b.startDate desc")
     Collection<Booking> findByOwnerIdAll(long ownerId);
 
     @Query("select b from Booking b where b.item.id in " +
             "(select i.id from Item i where i.owner.id = ?1)" +
-            "and ?2 between b.startDate and b.endDate")
+            "and ?2 between b.startDate and b.endDate order by b.startDate desc")
     Collection<Booking> findByOwnerIdCurrent(long ownerId, LocalDateTime time);
 
     @Query("select b from Booking b where b.item.id in " +
             "(select i.id from Item i where i.owner.id = ?1)" +
-            "and ?2 > b.endDate")
+            "and ?2 > b.endDate order by b.startDate desc")
     Collection<Booking> findByOwnerIdPast(long ownerId, LocalDateTime time);
 
     @Query("select b from Booking b where b.item.id in " +
             "(select i.id from Item i where i.owner.id = ?1)" +
-            "and ?2 < b.startDate")
+            "and ?2 < b.startDate order by b.startDate desc")
     Collection<Booking> findByOwnerIdFuture(long ownerId, LocalDateTime time);
 
     @Query("select b from Booking b where b.item.id in " +
             "(select i.id from Item i where i.owner.id = ?1)" +
-            "and b.status = ?2")
+            "and b.status = ?2 order by b.startDate desc")
     Collection<Booking> findByOwnerIdAndStatus(long ownerId, BookingStatus status);
 
     @Query("SELECT COUNT(b) > 0 FROM Booking b WHERE b.booker.id = ?1 AND b.item.id = ?2")
